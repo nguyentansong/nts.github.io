@@ -4,150 +4,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1 user-scalable=0" />
+    <link rel="stylesheet" href="css/Style.css">
     <title>Demo</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        html,
-        body {
-            height: 100%;
-        }
-
-        body {
-            overflow: hidden;
-            display: flex;
-            background: #111;
-            perspective: 1000px;
-            transform-style: preserve-3d;
-        }
-
-        #drag-container,
-        #spin-container {
-            position: relative;
-            display: flex;
-            margin: auto;
-            transform-style: preserve-3d;
-            transform: rotateX(-10deg);
-        }
-
-        #drag-container img,
-        #drag-container video {
-            transform-style: preserve-3d;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            line-height: 200px;
-            font-size: 50px;
-            text-align: center;
-            box-shadow: 0 0 8px #fff;
-            -webkit-box-reflect: below 10px linear-gradient(transparent, transparent, #0005);
-        }
-
-        #drag-container img:hover,
-        #drag-container video:hover {
-            box-shadow: 0 0 15px #fffd;
-            -webkit-box-reflect: below 10px linear-gradient(transparent, transparent, #0007);
-        }
-
-        #drag-container p {
-            font-family: Serif;
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotateX(90deg);
-            color: #fff;
-        }
-
-        #ground {
-            width: 900px;
-            height: 900px;
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotateX(90deg);
-            background: -webkit-radial-gradient(center center, farthest-side, #9993, transparent);
-        }
-
-        #music-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        #carousel-container {
-            width: 100%;
-            height: 100%;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotateY(0deg);
-            }
-
-            to {
-                transform: rotateY(360deg);
-            }
-        }
-
-        @keyframes spinRevert {
-            from {
-                transform: rotateY(360deg);
-            }
-
-            to {
-                transform: rotateY(0deg);
-            }
-        }
-    </style>
 </head>
 
 <body>
 
-    <div id="drag-container">
+    <div id="drag-container" style="margin-top: 150px;">
         <div id="spin-container">
-            <!-- Đổi <div> (theo video) thành <img> để dễ dàng thêm, sửa, xoá các hình -->
-            <!-- Muốn thêm ảnh thì chỉ cần thêm tag <img> hoặc <video> -->
-            <img src="../PhamThiMyTu.github.io/Images/10.jpg" alt="">
-            <img src="../PhamThiMyTu.github.io/Images/11.jpg" alt="">
-            <img src="../PhamThiMyTu.github.io/Images/10.jpg" alt="">
-            <img src="../PhamThiMyTu.github.io/Images/11.jpg" alt="">
-            <img src="../PhamThiMyTu.github.io/Images/10.jpg" alt="">
-
-
-            <!-- Ví dụ thêm ảnh chứa link -->
-            <!-- <a target="_blank" href="https://f14.group.zp.zdn.vn/2123144330944502788/83c39c4ab662553c0c73.jpg">
-      <img src="https://f14.group.zp.zdn.vn/2123144330944502788/83c39c4ab662553c0c73.jpg" alt="">
-    </a> -->
-
-            <!-- Ví dụ thêm video  -->
-            <!-- <video controls autoplay="autoplay" loop>
-      <source src="https://player.vimeo.com/external/322244668.sd.mp4?s=338c48ac2dfcb1d4c0689968b5baf94eee6ca0c1&profile_id=165&oauth2_token_id=57447761" type="video/mp4">
-    </video> -->
-
-            <!-- Dòng chữ ở giữa vòng xoay -->
             <p>Desing By NgTSong</p>
         </div>
         <div id="ground"></div>
+        
     </div>
+    <div id="buttonChangeImage"><button onclick="changeImages()" class="btn-flip" data-back="831 ^^" data-front="Đổi hình nè"></button></div>
 
     <div id="music-container"></div>
+    <div id="myModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
     <script type="text/javascript">
+        var currentPosition = 0;
+        var arrImage = ["1.jpg", "2.jpg", "3.jpg", "6.jpg", "5.jpg","9.jpg", "IMG_.jpg", "7.jpg", "6.jpg", "5.jpg"];
+
+        var firsImages = getNextimages();
+        addImages(firsImages);
+        function changeImages() {
+            var next_images = getNextimages();
+            updateImages(next_images);
+        }
+        function addImages(images) {
+            for (let index = 0; index < images.length; index++) {
+                var image = document.createElement("img");
+                image.setAttribute("src", "../Images/" + images[index]);
+                image.setAttribute("id", "myimage" + (index + 1));
+                // image.addEventListener("click", function() {
+                // openModal("../Images/" + images[index]);
+                // });
+                document.getElementById("spin-container").appendChild(image);
+            }
+        }
+        function updateImages(images) {
+            for (let index = 0; index <= images.length; index++) {
+                var image = document.getElementById("myimage" + (index + 1));
+                image.src ="../Images/" + images[index];
+            }
+        }
+        function getNextimages(){
+            if(currentPosition + 5 <= arrImage.length)
+            {
+                var nextImages = arrImage.slice(currentPosition,currentPosition + 5)
+                currentPosition += 5;
+                return nextImages;
+            }else{
+                currentPosition = 0;
+                return getNextimages();
+            }
+        }
+
+        function openModal(src) {
+            var modal = document.getElementById("myModal");
+            var modalImg = document.getElementById("modalImage");
+            
+            modal.style.display = "block";
+            modalImg.src = src;
+        }
+
+        function closeModal() {
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        }
 
         // Các bạn có thể thay đổi giá trị các biến môi trường ở đây:
-        var radius = 340; // Độ rộng vòng xoay
+        var radius = 180; // Độ rộng vòng xoay
         var autoRotate = true; // Tự động xoay hay không
-        var rotateSpeed = -60; // đơn vị: giây/vòng. thời gian để xoay hết 1 vòng, dấu trừ để xoay ngược lại
-        var imgWidth = 190; // độ rộng ảnh (tính theo px)
-        var imgHeight = 190; // độ cao ảnh (tính theo px)
+        var rotateSpeed = 60; // đơn vị: giây/vòng. thời gian để xoay hết 1 vòng, dấu trừ để xoay ngược lại
+        var imgWidth = 230; // độ rộng ảnh (tính theo px)
+        var imgHeight = 310; // độ cao ảnh (tính theo px)
 
         // Link nhạc nền - cho bằng null nếu không muốn nhạc nền
-        var bgMusicURL = 'https://api.soundcloud.com/tracks/191576787/stream?client_id=587aa2d384f7333a886010d5f52f302a';
-        var bgMusicControls = false; // Hiện khung điều khiển nhạc nền hay không
+        var bgMusicURL = 'Musics/BanDoi.mp3';
+        var bgMusicControls = true; // Hiện khung điều khiển nhạc nền hay không
 
         /*
                 CHÚ Ý:
