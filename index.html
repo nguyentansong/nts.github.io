@@ -21,7 +21,7 @@
 
     <div id="music-container1">
         
-        <audio autoplay loop>
+        <audio id="backgroundAudio" loop>
             <source src="../MyCrush.github.io/Musics/BanDoi.mp3" type="audio/mp3">
             Your browser does not support the audio element.
         </audio>
@@ -31,6 +31,10 @@
         <img class="modal-content" id="modalImage">
     </div>
     <script type="text/javascript">
+        window.addEventListener('load', function () {
+            var audio = document.getElementById('backgroundAudio');
+            audio.play();
+        });
         var currentPosition = 0;
         var arrImage = ["1.jpg", "2.jpg", "3.jpg", "6.jpg", "5.jpg","9.jpg", "IMG_.jpg", "7.jpg", "6.jpg", "5.jpg"];
 
