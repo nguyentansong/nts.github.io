@@ -20,9 +20,10 @@
     <div id="buttonChangeImage"><button onclick="changeImages()" class="btn-flip" data-back="831 ^^" data-front="Đổi hình nè"></button></div>
 
     <div id="music-container1">
-        <iframe src="./Musics/BanDoi.mp3" allow="autoplay" id="audio" style="display: none"></iframe>
-        <audio id="player" autoplay loop>
+        
+        <audio autoplay loop>
             <source src="../MyCrush.github.io/Musics/BanDoi.mp3" type="audio/mp3">
+            Your browser does not support the audio element.
         </audio>
     </div>
     <div id="myModal" class="modal">
@@ -155,13 +156,13 @@
         }
 
         // thêm nhạc nền
-        if (bgMusicURL) {
-            document.getElementById('music-container').innerHTML += `
-    <audio src="${bgMusicURL}" ${bgMusicControls ? 'controls' : ''} autoplay loop>    
-    <p>If you are reading this, it is because your browser does not support the audio element.</p>
-    </audio>
-    `;
-        }
+    //     if (bgMusicURL) {
+    //         document.getElementById('music-container').innerHTML += `
+    // <audio src="${bgMusicURL}" ${bgMusicControls ? 'controls' : ''} autoplay loop>    
+    // <p>If you are reading this, it is because your browser does not support the audio element.</p>
+    // </audio>
+    // `;
+    //     }
 
         // cài đặt events
         if (mobilecheck()) {
