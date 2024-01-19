@@ -19,7 +19,12 @@
     </div>
     <div id="buttonChangeImage"><button onclick="changeImages()" class="btn-flip" data-back="831 ^^" data-front="Đổi hình nè"></button></div>
 
-    <div id="music-container"></div>
+    <div id="music-container1">
+        <iframe src="./Musics/BanDoi.mp3" allow="autoplay" id="audio" style="display: none"></iframe>
+        <audio id="player" autoplay loop>
+            <source src="./Musics/BanDoi.mp3" type="audio/mp3">
+        </audio>
+    </div>
     <div id="myModal" class="modal">
         <span class="close" onclick="closeModal()">&times;</span>
         <img class="modal-content" id="modalImage">
