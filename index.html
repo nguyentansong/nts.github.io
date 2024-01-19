@@ -31,9 +31,19 @@
         <img class="modal-content" id="modalImage">
     </div>
     <script type="text/javascript">
-        document.body.addEventListener('click', function () {
-            var audio = document.getElementById('backgroundAudio');
-            audio.play();
+        // document.body.addEventListener('click', function () {
+        //     var audio = document.getElementById('backgroundAudio');
+        //     audio.play();
+        // });
+        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var oscillator = audioContext.createOscillator();
+        oscillator.connect(audioContext.destination);
+        oscillator.start();
+
+        // Sự kiện người dùng ảo để khởi chạy âm thanh
+        document.addEventListener('DOMContentLoaded', function () {
+            var playButton = document.getElementById('backgroundAudio'); // Thay 'playButton' bằng ID của phần tử bạn muốn sử dụng
+            playButton.click();
         });
         var currentPosition = 0;
         var arrImage = ["1.jpg", "2.jpg", "3.jpg", "6.jpg", "5.jpg","9.jpg", "IMG_.jpg", "7.jpg", "6.jpg", "5.jpg"];
