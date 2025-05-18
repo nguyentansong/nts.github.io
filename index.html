@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Surprise Text</title>
+  <title>Surprise 😊</title>
   <style>
     html, body {
     margin: 0;
@@ -40,6 +40,7 @@
       transform: translate(-50%, -50%);
       animation: fadeIn 0.8s forwards;
       white-space: nowrap;
+      font-weight: bold;
     }
 
     .intro {
@@ -57,10 +58,7 @@
     }
 
     audio {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      z-index: 999;
+      display: none; /* Ẩn hoàn toàn audio */
     }
     
     /* Chỉ thị khi hover trên màn hình */
@@ -89,9 +87,9 @@
   <div class="text-container" id="textContainer"></div>
   
   <!-- Thêm hướng dẫn click -->
-  <div class="click-instruction" id="click-instruction">Nhấn vào đây nè để nge Song hát :D </div>
+  <div class="click-instruction" id="click-instruction">Nhấn vào bất kỳ đâu để nghe Song hát :D</div>
 
-  <audio id="bgMusic" controls autoplay muted>
+  <audio id="bgMusic" autoplay muted>
     <source src="https://www.bensound.com/bensound-music/bensound-littleidea.mp3" type="audio/mpeg">
     Trình duyệt của bạn không hỗ trợ âm thanh.
   </audio>
@@ -103,28 +101,57 @@
   const music = document.getElementById("bgMusic");
   const clickInstruction = document.getElementById("click-instruction");
 
-  const totalTexts = 9;
-  let index = 0;
+  // Danh sách các dòng chữ đùa nghịch hiển thị đầu tiên
+  const funnyTexts = [
+    "Lêu lêu... không có chuyện đó đâu... 😜",
+    "Bị hack rùi đó...",
+    "Sợ hem sợ hem...",
+    "Lêu lêu...",
+    "Hahaha...",
+    "Rén chưa lần sau đừng click bừa nhé 😁"
+  ];
+
+  const totalFunnyTexts = funnyTexts.length;
+  const totalNiceDayTexts = 9;
+  
+  let funnyTextIndex = 0;
+  let niceDayIndex = 0;
   let introTextElement = null;
   const usedPositions = [];
   let animationStarted = false;
+  let musicPlaying = false;
+  let funnyTextDisplayComplete = false;
 
-  function getRandomNonOverlappingPosition(fontSize, isCenter = false) {
+  function getRandomNonOverlappingPosition(fontSize, isCenter = false, text = "") {
     if (isCenter) return { x: centerX, y: centerY };
 
-    const padding = 50 + fontSize;
+    // Ước lượng chiều rộng của text dựa vào độ dài và font size
+    // Hệ số 0.6 là ước lượng trung bình cho mỗi ký tự
+    const estimatedTextWidth = text.length * fontSize * 0.6;
+    
+    const paddingX = Math.max(estimatedTextWidth / 2, 50) + fontSize;
+    const paddingY = fontSize * 1.5; // Thêm padding dọc
+    
+    // Giới hạn vùng hiển thị để tránh văn bản bị cắt
+    const minX = paddingX;
+    const maxX = window.innerWidth - paddingX;
+    const minY = paddingY; 
+    const maxY = window.innerHeight - paddingY;
+    
     let maxTries = 100;
 
     while (maxTries-- > 0) {
-      const x = Math.random() * (window.innerWidth - padding * 2) + padding;
-      const y = Math.random() * (window.innerHeight - padding * 2) + padding;
+      // Sinh vị trí trong vùng an toàn
+      const x = Math.random() * (maxX - minX) + minX;
+      const y = Math.random() * (maxY - minY) + minY;
       let overlap = false;
 
       for (const pos of usedPositions) {
         const dx = x - pos.x;
         const dy = y - pos.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < fontSize + pos.size + 10) {
+        // Kiểm tra khoảng cách an toàn
+        if (distance < fontSize + pos.size + 20) {
           overlap = true;
           break;
         }
@@ -136,37 +163,55 @@
       }
     }
 
-    // Nếu thử nhiều lần vẫn không được, cứ dùng trung tâm
-    return { x: centerX, y: centerY };
+    // Nếu không tìm được vị trí thích hợp, đặt gần trung tâm nhưng tránh chồng lấp
+    const angle = Math.random() * Math.PI * 2;
+    const distance = fontSize * 2;
+    return { 
+      x: centerX + Math.cos(angle) * distance, 
+      y: centerY + Math.sin(angle) * distance 
+    };
   }
 
-  function showIntroText() {
-    const text = document.createElement("div");
-    text.className = "text intro";
-    text.innerText = "Lêu lêu..... không có chuyện đó đâu... hi hi...";
-    text.style.left = `${centerX}px`;
-    text.style.top = `${centerY}px`;
-    container.appendChild(text);
-    introTextElement = text;
-  }
+  function placeNextFunnyText() {
+    if (funnyTextIndex >= totalFunnyTexts) {
+      funnyTextDisplayComplete = true;
+      return;
+    }
 
-  function placeNextText() {
-    if (index >= totalTexts) return;
-
-    const fontSize = 16 + index * 5;
-    const isCenter = index === totalTexts - 1;
-    const { x, y } = getRandomNonOverlappingPosition(fontSize, isCenter);
+    const fontSize = 24; // Kích thước cố định cho các dòng chữ đùa nghịch
+    const currentText = funnyTexts[funnyTextIndex];
+    const { x, y } = getRandomNonOverlappingPosition(fontSize, false, currentText);
 
     const text = document.createElement("div");
     text.className = "text";
-    text.innerText = "Have a nice day !!!!....";
+    text.innerText = currentText;
     text.style.left = `${x}px`;
     text.style.top = `${y}px`;
     text.style.fontSize = `${fontSize}px`;
-    text.style.animationDelay = `${index * 0.3}s`;
+    text.style.animationDelay = `${funnyTextIndex * 0.5}s`;
 
     container.appendChild(text);
-    index++;
+    funnyTextIndex++;
+  }
+
+  function placeNextNiceDayText() {
+    if (niceDayIndex >= totalNiceDayTexts) return;
+
+    const fontSize = 16 + niceDayIndex * 5;
+    const currentText = "Have a nice day !!!!....";
+    const isCenter = niceDayIndex === totalNiceDayTexts - 1;
+    const { x, y } = getRandomNonOverlappingPosition(fontSize, isCenter, currentText);
+
+    const text = document.createElement("div");
+    text.className = "text";
+    text.innerText = currentText;
+    text.style.left = `${x}px`;
+    text.style.top = `${y}px`;
+    text.style.fontSize = `${fontSize}px`;
+    text.style.animationDelay = `${niceDayIndex * 0.3}s`;
+
+    container.appendChild(text);
+    niceDayIndex++;
   }
 
   const bpm = 120;
@@ -174,30 +219,37 @@
 
   // Bắt đầu hiệu ứng khi người dùng unmute nhạc
   function startAnimation() {
-    showIntroText();
-
-    setTimeout(() => {
-      if (introTextElement) {
-        introTextElement.classList.add("hidden");
+    // Hiển thị các dòng chữ đùa nghịch trước
+    const funnyTextInterval = setInterval(() => {
+      if (funnyTextDisplayComplete) {
+        clearInterval(funnyTextInterval);
+        
+        // Sau khi hiển thị hết các dòng chữ đùa nghịch, bắt đầu hiển thị "Have a nice day"
+        setTimeout(() => {
+          usedPositions.length = 0; // reset danh sách vị trí
+          const niceDayInterval = setInterval(() => {
+            if (niceDayIndex >= totalNiceDayTexts) {
+              clearInterval(niceDayInterval);
+            } else {
+              placeNextNiceDayText();
+            }
+          }, beatInterval);
+        }, 2000); // chờ 2 giây trước khi hiển thị "Have a nice day"
+        
+      } else {
+        placeNextFunnyText();
       }
-
-      index = 0;
-      usedPositions.length = 0; // reset danh sách
-      const intervalId = setInterval(() => {
-        if (index >= totalTexts) {
-          clearInterval(intervalId);
-        } else {
-          placeNextText();
-        }
-      }, beatInterval);
-    }, 3000);
+    }, beatInterval);
   }
   
   // Xử lý sự kiện click trên toàn bộ document
   document.addEventListener("click", function() {
     if (!animationStarted) {
+      // Lần click đầu tiên: bắt đầu hiệu ứng và phát nhạc
       animationStarted = true;
+      musicPlaying = true;
       music.muted = false;
+      music.volume = 0.5; // Đặt âm lượng ở mức 50%
       music.play().then(() => {
         // Ẩn hướng dẫn click
         clickInstruction.classList.add("hidden-element");
@@ -206,11 +258,23 @@
       }).catch(error => {
         console.error("Không thể phát nhạc:", error);
       });
+    } else {
+      // Các lần click tiếp theo: toggle nhạc (bật/tắt)
+      if (musicPlaying) {
+        music.pause();
+        musicPlaying = false;
+      } else {
+        music.play();
+        musicPlaying = true;
+      }
     }
   });
   
   // Auto start âm thanh muted khi tải trang
   document.addEventListener("DOMContentLoaded", function() {
+    // Đặt âm lượng ngay từ đầu
+    music.volume = 0.5;
+    
     // Nhạc tự động chạy nhưng bị mute
     music.play().catch(function(error) {
       console.log("Autoplay bị chặn, cần tương tác người dùng:", error);
